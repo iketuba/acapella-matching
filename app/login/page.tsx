@@ -9,7 +9,7 @@ type Mode = "signin" | "signup";
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/recruits";
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [mode, setMode] = useState<Mode>("signin");
@@ -56,7 +56,7 @@ export default function LoginPage() {
         router.refresh();
       } else {
         // 新規登録
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
         });
@@ -67,8 +67,29 @@ export default function LoginPage() {
           return;
         }
 
-        setMessage("新規登録に成功しました。続けてログインしてください。");
-        setMode("signin");
+        // ★ メール確認が不要な設定なら session が返るのでそのままOK
+        //   もし返らなかった場合はパスワードでログインを試みる
+        if (!data.session) {
+          const { error: signInError } = await supabase.auth.signInWithPassword(
+            {
+              email,
+              password,
+            }
+          );
+
+          if (signInError) {
+            console.error("Auto sign-in after sign-up failed:", signInError);
+            setMessage(
+              "新規登録は成功しましたが、自動ログインに失敗しました。ログイン画面からログインしてください。"
+            );
+            setMode("signin");
+            return;
+          }
+        }
+
+        // ★ サインアップ＋ログイン完了 → プロフィール登録画面へ
+        router.push("/profile");
+        router.refresh();
       }
     } finally {
       setSubmitting(false);

@@ -55,7 +55,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
         <h1 className="text-xl font-bold">募集詳細</h1>
         {/* 戻るボタン（一覧へ） */}
         <Link
-          href="/recruits"
+          href="/"
           className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-50"
         >
           募集一覧に戻る
