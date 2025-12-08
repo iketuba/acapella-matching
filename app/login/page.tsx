@@ -1,15 +1,13 @@
 "use client";
 
 import { FormEvent, useMemo, useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type Mode = "signin" | "signup";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/recruits";
 
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
   const [mode, setMode] = useState<Mode>("signin");
@@ -22,11 +20,11 @@ export default function LoginPage() {
     const checkLoggedIn = async () => {
       const { data } = await supabase.auth.getUser();
       if (data.user) {
-        router.push(redirectTo);
+        router.push("/");
       }
     };
     void checkLoggedIn();
-  }, [supabase, redirectTo, router]);
+  }, [supabase, router]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -51,8 +49,8 @@ export default function LoginPage() {
           return;
         }
 
-        // ログイン成功 → redirect の指定があればそこへ、それ以外は /recruits
-        router.push(redirectTo);
+        // ログイン成功 → /
+        router.push("/");
         router.refresh();
       } else {
         // 新規登録

@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-// ↑ あなたの createSupabaseBrowserClient のパスに合わせて修正してください
 
 export function NewRecruitButton() {
   const router = useRouter();
@@ -14,10 +13,10 @@ export function NewRecruitButton() {
 
     if (!data.session) {
       // 未ログイン → ログインページへ
-      router.push("/login?redirect=/recruits/new");
+      router.push("/login");
     } else {
       // ログイン済み → 募集投稿ページへ
-      router.push("/recruits/new");
+      router.push("/new");
     }
   };
 

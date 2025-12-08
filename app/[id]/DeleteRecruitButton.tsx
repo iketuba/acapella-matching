@@ -33,7 +33,7 @@ export function DeleteRecruitButton({ recruitId }: Props) {
       }
 
       // 削除に成功したら募集一覧へ
-      router.push("/recruits");
+      router.push("/");
       router.refresh();
     } finally {
       setLoading(false);
