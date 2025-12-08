@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { TablesInsert } from "@/types/database";
+import { MAIN_PART_OPTIONS } from "../profile/page";
 
 type RecruitPostInsert = TablesInsert<"recruit_posts">;
 
@@ -14,13 +15,18 @@ type Props = {
 type FormState = {
   title: string;
   description: string;
-  requiredPartsText: string;
+  requiredPartsText: string[];
   area: string;
   circleName: string;
   isCircleLimited: boolean;
   status: string;
   targetLive: string;
 };
+
+  export const RecruitStatus = {
+    OPEN: "open",
+    CLOSED: "closed",
+  } as const;
 
 export function RecruitNewForm({ ownerUserId }: Props) {
   const router = useRouter();
@@ -29,11 +35,11 @@ export function RecruitNewForm({ ownerUserId }: Props) {
   const [form, setForm] = useState<FormState>({
     title: "",
     description: "",
-    requiredPartsText: "",
+    requiredPartsText: [MAIN_PART_OPTIONS.LEAD],
     area: "",
     circleName: "",
     isCircleLimited: false,
-    status: "募集中",
+    status: RecruitStatus.OPEN,
     targetLive: "",
   });
 
@@ -41,7 +47,7 @@ export function RecruitNewForm({ ownerUserId }: Props) {
 
   const handleChange =
     (field: keyof FormState) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const value =
         e.target.type === "checkbox"
           ? (e.target as HTMLInputElement).checked
@@ -51,27 +57,41 @@ export function RecruitNewForm({ ownerUserId }: Props) {
         ...prev,
         [field]: value,
       }));
+      console.log(`${field} changed to:`, value);
     };
+
+  const handleMainPartToggle = (part: string) => {
+    setForm((prev) => {
+      const exists = prev.requiredPartsText.includes(part);
+
+      return {
+        ...prev,
+        requiredPartsText: exists
+          ? prev.requiredPartsText.filter((p) => p !== part) // 解除
+          : [...prev.requiredPartsText, part],               // 追加
+      };
+    });
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submitting) return;
     setSubmitting(true);
 
-    try {
-      const requiredParts = form.requiredPartsText
-        .split(",")
-        .map((part) => part.trim())
-        .filter((part) => part.length > 0);
+    if (form.requiredPartsText.length === 0) {
+      alert("必要パートを1つ以上選択してください。");
+      return;
+    }
 
+    try {
       const payload: RecruitPostInsert = {
         title: form.title,
         description: form.description,
-        required_parts: requiredParts,
+        required_parts: form.requiredPartsText,
         area: form.area,
         circle_name: form.circleName || null,
         is_circle_limited: form.isCircleLimited,
-        status: form.status || "募集中",
+        status: form.status || RecruitStatus.OPEN,
         target_live: form.targetLive || null,
         owner_user_id: ownerUserId,
       };
@@ -131,17 +151,22 @@ export function RecruitNewForm({ ownerUserId }: Props) {
         <label className="text-sm font-semibold">
           必要パート <span className="text-red-500">*</span>
         </label>
-        <input
-          type="text"
-          required
-          value={form.requiredPartsText}
-          onChange={handleChange("requiredPartsText")}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          placeholder="例）Lead, Chorus1, Chorus2, Bass, VP"
-        />
-        <p className="text-xs text-gray-500">
-          複数ある場合はカンマ区切りで入力してください。
-        </p>
+        <div className="flex flex-wrap gap-2">
+          {Object.values(MAIN_PART_OPTIONS).map((part) => (
+            <button
+              key={part}
+              type="button"
+              onClick={() => handleMainPartToggle(part)}
+              className={`rounded-full border px-3 py-1 text-xs ${
+                form.requiredPartsText.includes(part)
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-gray-300 bg-white text-gray-700"
+              }`}
+            >
+              {part}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* エリア */}
@@ -188,13 +213,14 @@ export function RecruitNewForm({ ownerUserId }: Props) {
       {/* ステータス */}
       <div className="flex flex-col gap-1">
         <label className="text-sm font-semibold">ステータス</label>
-        <input
-          type="text"
+        <select
           value={form.status}
           onChange={handleChange("status")}
           className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          placeholder="例）募集中 / 仮決定 / 締切"
-        />
+        >
+          <option value={RecruitStatus.OPEN}>募集中</option>
+          <option value={RecruitStatus.CLOSED}>募集締切</option>
+        </select>
       </div>
 
       {/* 目標ライブ */}
