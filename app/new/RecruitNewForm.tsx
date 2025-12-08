@@ -88,7 +88,7 @@ export function RecruitNewForm({ ownerUserId }: Props) {
         return;
       }
 
-      router.push(`/recruits/${data.id}`);
+      router.push(`/${data.id}`);
       router.refresh();
     } finally {
       setSubmitting(false);

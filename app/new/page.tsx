@@ -19,7 +19,7 @@ export default function RecruitNewPage() {
 
       if (!data.user) {
         // 未ログイン → ログインページへ
-        router.push("/login?redirect=/recruits/new");
+        router.push("/login");
       } else {
         // ログイン済み → user_id を保存
         setUserId(data.user.id);
@@ -56,7 +56,7 @@ export default function RecruitNewPage() {
 
         {/* ◀ 追加：戻るボタン */}
         <Link
-          href="/recruits"
+          href="/"
           className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-50"
         >
           募集一覧に戻る
