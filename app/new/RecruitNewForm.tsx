@@ -35,7 +35,7 @@ export function RecruitNewForm({ ownerUserId }: Props) {
   const [form, setForm] = useState<FormState>({
     title: "",
     description: "",
-    requiredPartsText: [MAIN_PART_OPTIONS.LEAD],
+    requiredPartsText: [],
     area: "",
     circleName: "",
     isCircleLimited: false,
@@ -76,12 +76,13 @@ export function RecruitNewForm({ ownerUserId }: Props) {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submitting) return;
-    setSubmitting(true);
 
     if (form.requiredPartsText.length === 0) {
       alert("必要パートを1つ以上選択してください。");
       return;
     }
+
+    setSubmitting(true);
 
     try {
       const payload: RecruitPostInsert = {
