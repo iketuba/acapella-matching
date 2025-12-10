@@ -25,6 +25,11 @@ export default async function RecruitListPage() {
 
   const posts: RecruitPostListItem[] = data ?? [];
 
+  const RecruitStatusLabel: Record<string, string> = {
+    open: "募集中",
+    closed: "募集締切",
+  };
+
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
@@ -88,7 +93,7 @@ export default async function RecruitListPage() {
                     <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
                       ステータス
                     </span>
-                    <span className="text-[11px]">{post.status}</span>
+                    <span className="text-[11px]">{RecruitStatusLabel[post.status]}</span>
                   </div>
                 </div>
               </Link>

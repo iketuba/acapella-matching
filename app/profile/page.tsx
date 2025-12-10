@@ -21,14 +21,14 @@ type ProfileFormValues = {
   sns_youtube: string;
 };
 
-const MAIN_PART_OPTIONS = [
-  "Lead",
-  "1st",
-  "2nd",
-  "3rd",
-  "Bass",
-  "Vocal Percussion",
-] as const;
+export const MAIN_PART_OPTIONS = {
+  LEAD: "Lead",
+  FIRST: "1st",
+  SECOND: "2nd",
+  THIRD: "3rd",
+  BASS: "Bass",
+  VP: "Vocal Percussion",
+} as const;
 
 const SUB_PART_OPTIONS = MAIN_PART_OPTIONS;
 
@@ -317,7 +317,7 @@ export default function ProfilePage() {
             required
           >
             <option value="">選択してください</option>
-            {MAIN_PART_OPTIONS.map((part) => (
+            {Object.values(MAIN_PART_OPTIONS).map((part) => (
               <option key={part} value={part}>
                 {part}
               </option>
@@ -331,7 +331,7 @@ export default function ProfilePage() {
             サブパート（複数選択可）
           </span>
           <div className="flex flex-wrap gap-2">
-            {SUB_PART_OPTIONS.map((part) => (
+            {Object.values(SUB_PART_OPTIONS).map((part) => (
               <button
                 key={part}
                 type="button"
