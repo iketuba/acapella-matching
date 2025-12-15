@@ -1,47 +1,16 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { redirect } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { RecruitNewForm } from "./RecruitNewForm";
 
-export default function RecruitNewPage() {
-  const router = useRouter();
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+export default async function RecruitNewPage() {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const [checking, setChecking] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data } = await supabase.auth.getUser();
-
-      if (!data.user) {
-        // 未ログイン → ログインページへ
-        router.push("/login");
-      } else {
-        // ログイン済み → user_id を保存
-        setUserId(data.user.id);
-      }
-
-      setChecking(false);
-    };
-
-    void checkAuth();
-  }, [supabase, router]);
-
-  if (checking) {
-    return (
-      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
-        <p className="text-sm text-gray-600">ログイン状態を確認しています...</p>
-      </main>
-    );
-  }
-
-  // 未ログインの場合は router.push によって /login に飛んでいるのでここはほぼ通らない想定
-  if (!userId) {
-    return null;
+  if (!user) {
+    redirect("/login");
   }
 
   return (
@@ -63,7 +32,7 @@ export default function RecruitNewPage() {
         </Link>
       </header>
 
-      <RecruitNewForm ownerUserId={userId} />
+      <RecruitNewForm ownerUserId={user.id} />
     </main>
   );
 }
