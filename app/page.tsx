@@ -30,6 +30,20 @@ export default async function RecruitListPage() {
     closed: "募集締切",
   };
 
+  const RecruitStatusConfig: Record<
+    string,
+    { label: string; className: string }
+  > = {
+    open: {
+      label: "募集中",
+      className: "bg-green-100 text-green-700 border-green-300",
+    },
+    closed: {
+      label: "募集締切",
+      className: "bg-red-100 text-red-700 border-red-300",
+    },
+  };
+
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
@@ -56,11 +70,19 @@ export default async function RecruitListPage() {
             <li key={post.id}>
               <Link
                 href={`/${post.id}`}
-                className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-blue-400 hover:shadow-md"
+                className="relative block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:border-blue-400 hover:shadow-md"
               >
                 <h2 className="text-base font-semibold">{post.title}</h2>
 
                 <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-700">
+                  {/* ステータスバッジ（右上） */}
+                  <span
+                    className={`absolute right-3 top-3 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
+                      RecruitStatusConfig[post.status].className
+                    }`}
+                  >
+                    {RecruitStatusConfig[post.status].label}
+                  </span>
                   {/* 必要パート */}
                   <div className="flex flex-wrap items-center gap-1">
                     <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
@@ -86,14 +108,6 @@ export default async function RecruitListPage() {
                       エリア
                     </span>
                     <span className="text-[11px]">{post.area}</span>
-                  </div>
-
-                  {/* ステータス */}
-                  <div className="flex items-center gap-1">
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-                      ステータス
-                    </span>
-                    <span className="text-[11px]">{RecruitStatusLabel[post.status]}</span>
                   </div>
                 </div>
               </Link>
