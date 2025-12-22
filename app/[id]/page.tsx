@@ -53,14 +53,6 @@ export default async function RecruitDetailPage({ params }: PageProps) {
     },
   };
 
-  // 表示用のラベル
-  const circleLimitedLabel =
-    post.is_circle_limited === null
-      ? "未指定"
-      : post.is_circle_limited
-      ? "サークルメンバー限定"
-      : "誰でもOK";
-
   const targetLiveLabel = post.target_live ?? "未定";
 
   return (
@@ -102,13 +94,6 @@ export default async function RecruitDetailPage({ params }: PageProps) {
               サークル
             </span>
             <span className="text-[11px]">{post.circle_name ?? "未設定"}</span>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-              サークル限定
-            </span>
-            <span className="text-[11px]">{circleLimitedLabel}</span>
           </div>
 
           <div className="flex items-center gap-1">

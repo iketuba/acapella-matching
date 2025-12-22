@@ -26,7 +26,6 @@ export function RecruitNewForm({ ownerUserId }: Props) {
     requiredPartsText: [],
     area: "",
     circleName: "",
-    isCircleLimited: false,
     status: RecruitStatus.OPEN,
     targetLive: "",
   };
@@ -38,7 +37,6 @@ export function RecruitNewForm({ ownerUserId }: Props) {
       required_parts: form.requiredPartsText,
       area: form.area,
       circle_name: form.circleName || null,
-      is_circle_limited: form.isCircleLimited,
       status: form.status || RecruitStatus.OPEN,
       target_live: form.targetLive || null,
       owner_user_id: ownerUserId,

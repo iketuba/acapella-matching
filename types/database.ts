@@ -72,7 +72,6 @@ export type Database = {
           created_at: string
           description: string
           id: string
-          is_circle_limited: boolean | null
           owner_user_id: string
           required_parts: string[]
           status: string
@@ -86,7 +85,6 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
-          is_circle_limited?: boolean | null
           owner_user_id: string
           required_parts: string[]
           status?: string
@@ -100,7 +98,6 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
-          is_circle_limited?: boolean | null
           owner_user_id?: string
           required_parts?: string[]
           status?: string

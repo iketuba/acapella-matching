@@ -15,7 +15,6 @@ export type RecruitFormValues = {
   requiredPartsText: string[];
   area: string;
   circleName: string;
-  isCircleLimited: boolean;
   status: string;
   targetLive: string;
 };
@@ -156,20 +155,6 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           placeholder="例）○○大学アカペラサークル△△"
         />
-      </div>
-
-      {/* サークル限定フラグ */}
-      <div className="flex items-center gap-2">
-        <input
-          id="isCircleLimited"
-          type="checkbox"
-          checked={form.isCircleLimited}
-          onChange={handleChange("isCircleLimited")}
-          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-        />
-        <label htmlFor="isCircleLimited" className="text-sm">
-          サークルメンバー限定の募集にする
-        </label>
       </div>
 
       {/* ステータス */}
