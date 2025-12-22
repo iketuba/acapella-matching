@@ -39,6 +39,20 @@ export default async function RecruitDetailPage({ params }: PageProps) {
   const post: RecruitPost = data;
   const isOwner = user?.id === post.owner_user_id;
 
+  const RecruitStatusConfig: Record<
+    string,
+    { label: string; className: string }
+  > = {
+    open: {
+      label: "募集中",
+      className: "bg-green-100 text-green-700 border-green-300",
+    },
+    closed: {
+      label: "募集締切",
+      className: "bg-red-100 text-red-700 border-red-300",
+    },
+  };
+
   // 表示用のラベル
   const circleLimitedLabel =
     post.is_circle_limited === null
@@ -62,19 +76,20 @@ export default async function RecruitDetailPage({ params }: PageProps) {
         </Link>
       </header>
 
-      <section className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+      <section className="relative rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+        {/* 右上ステータスバッジ（右上） */}
+        <span
+          className={`absolute right-3 top-3 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
+            RecruitStatusConfig[post.status].className
+          }`}
+        >
+          {RecruitStatusConfig[post.status].label}
+        </span>
         {/* タイトル */}
         <h2 className="text-lg font-semibold">{post.title}</h2>
 
         {/* ステータス / エリア / サークル */}
         <div className="mt-3 flex flex-wrap gap-3 text-xs text-gray-700">
-          <div className="flex items-center gap-1">
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-              ステータス
-            </span>
-            <span className="text-[11px]">{post.status}</span>
-          </div>
-
           <div className="flex items-center gap-1">
             <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
               エリア
