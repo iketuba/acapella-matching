@@ -27,7 +27,6 @@ export function RecruitEditForm({ recruitPost }: Props) {
     requiredPartsText: recruitPost.required_parts ?? [],
     area: recruitPost.area,
     circleName: recruitPost.circle_name || "",
-    isCircleLimited: recruitPost.is_circle_limited ?? false,
     status: recruitPost.status ?? RecruitStatus.OPEN,
     targetLive: recruitPost.target_live || "",
   };
@@ -39,7 +38,6 @@ export function RecruitEditForm({ recruitPost }: Props) {
       required_parts: form.requiredPartsText,
       area: form.area,
       circle_name: form.circleName || null,
-      is_circle_limited: form.isCircleLimited,
       status: form.status || RecruitStatus.OPEN,
       target_live: form.targetLive || null,
     };
