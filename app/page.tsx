@@ -1,15 +1,20 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Tables } from "@/types/database";
-
+import {
+  RecruitStatusConfig,
+  type RecruitStatus,
+} from "@/constants/recruitStatus";
 import { ProfileOrLoginButton } from "./ProfileOrLoginButton";
 import { NewRecruitButton } from "./NewRecruitButton";
 
 type RecruitPost = Tables<"recruit_posts">;
 type RecruitPostListItem = Pick<
   RecruitPost,
-  "id" | "title" | "required_parts" | "area" | "status"
->;
+  "id" | "title" | "required_parts" | "area"
+> & {
+  status: RecruitStatus;
+};
 
 export default async function RecruitListPage() {
   const supabase = await createSupabaseServerClient();
@@ -24,25 +29,6 @@ export default async function RecruitListPage() {
   }
 
   const posts: RecruitPostListItem[] = data ?? [];
-
-  const RecruitStatusLabel: Record<string, string> = {
-    open: "募集中",
-    closed: "募集締切",
-  };
-
-  const RecruitStatusConfig: Record<
-    string,
-    { label: string; className: string }
-  > = {
-    open: {
-      label: "募集中",
-      className: "bg-green-100 text-green-700 border-green-300",
-    },
-    closed: {
-      label: "募集締切",
-      className: "bg-red-100 text-red-700 border-red-300",
-    },
-  };
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
