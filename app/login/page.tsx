@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type Mode = "signin" | "signup";
@@ -35,7 +36,6 @@ export default function LoginPage() {
 
     try {
       if (mode === "signin") {
-        // ログイン
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -49,14 +49,18 @@ export default function LoginPage() {
           return;
         }
 
-        // ログイン成功 → /
         router.push("/");
         router.refresh();
       } else {
-        // 新規登録
+        // ✅ 新規登録：メール認証リンクを送って、認証後に /auth/callback へ戻す
+        const origin = window.location.origin;
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: `${origin}/auth/callback?type=signup`,
+          },
         });
 
         if (error) {
@@ -65,8 +69,7 @@ export default function LoginPage() {
           return;
         }
 
-        setMessage("新規登録に成功しました。続けてログインしてください。");
-        setMode("signin");
+        router.push(`/check-email?email=${encodeURIComponent(email)}`);
       }
     } finally {
       setSubmitting(false);
@@ -83,7 +86,7 @@ export default function LoginPage() {
         <p className="mt-1 text-xs text-gray-500">
           {mode === "signin"
             ? "登録済みのメールアドレスとパスワードでログインしてください。"
-            : "メールアドレスとパスワードを登録します。"}
+            : "確認メールを送信します。リンクを開くとログインして募集一覧へ移動します。"}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-4">
@@ -111,7 +114,18 @@ export default function LoginPage() {
             />
           </div>
 
-          {message && <p className="text-xs text-red-500">{message}</p>}
+          {mode === "signin" && (
+            <div className="-mt-2 text-right">
+              <Link
+                href="/forgot-password"
+                className="text-xs text-blue-600 underline"
+              >
+                パスワードを忘れた方
+              </Link>
+            </div>
+          )}
+
+          {message && <p className="text-xs text-gray-700">{message}</p>}
 
           <button
             type="submit"
