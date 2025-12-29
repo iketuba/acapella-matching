@@ -5,7 +5,7 @@ import {
   RecruitStatusConfig,
   type RecruitStatus,
 } from "@/constants/recruitStatus";
-import { ProfileOrLoginButton } from "./ProfileOrLoginButton";
+import { LogoutOrLoginButton } from "./LogoutOrLoginButton";
 import { NewRecruitButton } from "./NewRecruitButton";
 
 type RecruitPost = Tables<"recruit_posts">;
@@ -34,10 +34,10 @@ export default async function RecruitListPage() {
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-bold">募集一覧</h1>
-        {/* ログイン状態でボタン切り替え */}
-        <ProfileOrLoginButton />
         {/* 新規投稿ボタン（ログインしていない場合は /login に飛ばす） */}
         <NewRecruitButton />
+        {/* ログイン状態でボタン切り替え */}
+        <LogoutOrLoginButton />
       </header>
 
       <p className="text-sm text-gray-600">

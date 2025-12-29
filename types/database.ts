@@ -14,61 +14,11 @@ export type Database = {
   }
   public: {
     Tables: {
-      profiles: {
-        Row: {
-          area: string
-          bio: string | null
-          circle_name: string | null
-          created_at: string
-          display_name: string
-          experience_years: number | null
-          main_part: string
-          member_type: string | null
-          sns_instagram: string | null
-          sns_x: string | null
-          sns_youtube: string | null
-          sub_parts: string[]
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          area: string
-          bio?: string | null
-          circle_name?: string | null
-          created_at?: string
-          display_name: string
-          experience_years?: number | null
-          main_part: string
-          member_type?: string | null
-          sns_instagram?: string | null
-          sns_x?: string | null
-          sns_youtube?: string | null
-          sub_parts?: string[]
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          area?: string
-          bio?: string | null
-          circle_name?: string | null
-          created_at?: string
-          display_name?: string
-          experience_years?: number | null
-          main_part?: string
-          member_type?: string | null
-          sns_instagram?: string | null
-          sns_x?: string | null
-          sns_youtube?: string | null
-          sub_parts?: string[]
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       recruit_posts: {
         Row: {
           area: string
           circle_name: string | null
+          contacts: Json
           created_at: string
           description: string
           id: string
@@ -82,6 +32,7 @@ export type Database = {
         Insert: {
           area: string
           circle_name?: string | null
+          contacts?: Json
           created_at?: string
           description: string
           id?: string
@@ -95,6 +46,7 @@ export type Database = {
         Update: {
           area?: string
           circle_name?: string | null
+          contacts?: Json
           created_at?: string
           description?: string
           id?: string
@@ -105,15 +57,7 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "recruit_posts_owner_user_id_fkey"
-            columns: ["owner_user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
