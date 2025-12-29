@@ -7,6 +7,7 @@ import type { Tables, TablesUpdate } from "@/types/database";
 import {
   RecruitForm,
   type RecruitFormValues,
+  type RecruitContacts,
   RecruitStatus,
 } from "@/components/RecruitForm";
 
@@ -26,6 +27,7 @@ export function RecruitEditForm({ recruitPost }: Props) {
     description: recruitPost.description,
     requiredPartsText: recruitPost.required_parts ?? [],
     area: recruitPost.area,
+    contacts: (recruitPost.contacts ?? {}) as RecruitContacts, // ✅ これだけ
     circleName: recruitPost.circle_name || "",
     status: recruitPost.status ?? RecruitStatus.OPEN,
     targetLive: recruitPost.target_live || "",
@@ -40,6 +42,7 @@ export function RecruitEditForm({ recruitPost }: Props) {
       circle_name: form.circleName || null,
       status: form.status || RecruitStatus.OPEN,
       target_live: form.targetLive || null,
+      contacts: form.contacts, // ✅ 保存
     };
 
     const { error } = await supabase

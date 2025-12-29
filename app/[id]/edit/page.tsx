@@ -45,7 +45,7 @@ export default async function RecruitEditPage({ params }: PageProps) {
             href={`/${id}`}
             className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-50"
             >
-            募集に戻る
+            募集詳細に戻る
             </Link>
         </header>
 
