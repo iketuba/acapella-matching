@@ -49,7 +49,7 @@ export function NewRecruitButton() {
         onClick={handleClick}
         className="rounded-md border border-blue-500 px-3 py-1 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
       >
-        新規投稿
+        募集する
       </button>
 
       {showMessage && (

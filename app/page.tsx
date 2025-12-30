@@ -70,10 +70,6 @@ export default async function RecruitListPage(props: PageProps) {
         </div>
       </header>
 
-      <p className="text-sm text-gray-600">
-        募集一覧は誰でも閲覧できます。この画面からは募集の削除・更新・追加はできません。
-      </p>
-
       {/* フィルタ */}
       <section className="flex items-center gap-2">
         <Link
