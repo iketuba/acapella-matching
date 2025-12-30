@@ -80,7 +80,7 @@ export function ContactCopyChip({ contacts }: Props) {
           >
             <p className="text-sm font-semibold">連絡先をコピーしますか？</p>
 
-            <div className="mt-2 rounded-md bg-gray-50 p-2 text-xs text-gray-700 whitespace-pre-wrap break-words">
+            <div className="mt-2 rounded-md bg-gray-50 p-2 text-xs text-gray-700 whitespace-pre-wrap wrap-break-word">
               {contacts}
             </div>
 
