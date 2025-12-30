@@ -55,7 +55,7 @@ export function NewRecruitButton() {
       {showMessage && (
         <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 flex flex-col items-center w-max z-50">
           {/* しっぽ：items-center により、メッセージボックスの真ん中に配置されます */}
-          <div className="h-0 w-0 border-l-[6px] border-r-[6px] border-b-[8px] border-l-transparent border-r-transparent border-b-green-100" />
+          <div className="h-0 w-0 border-l-[6px] border-r-[6px] border-b-8 border-l-transparent border-r-transparent border-b-green-100" />
 
           {/* メッセージ本体 */}
           <div className="rounded-lg bg-green-100 px-3 py-1 text-xs text-black shadow whitespace-nowrap">

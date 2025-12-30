@@ -27,15 +27,31 @@ type RecruitPostListItem = Pick<
   status: RecruitStatus;
 };
 
-export default async function RecruitListPage() {
+type PageProps = {
+  searchParams?: {
+    status?: string;
+  };
+};
+
+export default async function RecruitListPage(props: PageProps) {
+  const searchParams = await props.searchParams;
+  const statusFilter = searchParams?.status; // "open" のときだけ絞る
+  const isOpenOnly = statusFilter === "open";
+
   const supabase = await createSupabaseServerClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("recruit_posts")
     .select(
       "id, title, required_parts, area, status, contacts, circle_name, target_live, created_at, updated_at"
     )
     .order("created_at", { ascending: false });
+
+  if (isOpenOnly) {
+    query = query.eq("status", "open");
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("Failed to fetch recruit_posts:", error);
@@ -47,13 +63,43 @@ export default async function RecruitListPage() {
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-bold">募集一覧</h1>
-        <NewRecruitButton />
-        <LogoutOrLoginButton />
+
+        <div className="flex items-center gap-2">
+          <NewRecruitButton />
+          <LogoutOrLoginButton />
+        </div>
       </header>
 
       <p className="text-sm text-gray-600">
         募集一覧は誰でも閲覧できます。この画面からは募集の削除・更新・追加はできません。
       </p>
+
+      {/* フィルタ */}
+      <section className="flex items-center gap-2">
+        <Link
+          href="/"
+          className={`rounded-md border px-3 py-1 text-sm transition ${
+            !isOpenOnly
+              ? "border-blue-500 bg-blue-50 text-blue-600"
+              : "border-gray-300 text-gray-600 hover:bg-gray-50"
+          }`}
+        >
+          すべて
+        </Link>
+
+        <Link
+          href="/?status=open"
+          className={`rounded-md border px-3 py-1 text-sm transition ${
+            isOpenOnly
+              ? "border-blue-500 bg-blue-50 text-blue-600"
+              : "border-gray-300 text-gray-600 hover:bg-gray-50"
+          }`}
+        >
+          募集中のみ
+        </Link>
+
+        <span className="ml-2 text-sm text-gray-500">{posts.length}件</span>
+      </section>
 
       <section className="flex flex-col gap-3">
         {posts.length === 0 && (
@@ -76,7 +122,11 @@ export default async function RecruitListPage() {
               <li key={post.id}>
                 <Link
                   href={`/${post.id}`}
-                  className="relative block rounded-lg border border-gray-200 bg-white p-4 pb-8 shadow-sm transition hover:border-blue-400 hover:shadow-md"
+                  className={`relative block rounded-lg border border-gray-200 p-4 pb-8 shadow-sm transition ${
+                    post.status === "closed"
+                      ? "bg-gray-50 opacity-75 hover:border-gray-300 hover:shadow-md"
+                      : "bg-white hover:border-blue-400 hover:shadow-md"
+                  }`}
                 >
                   <h2 className="text-base font-semibold">{post.title}</h2>
 
