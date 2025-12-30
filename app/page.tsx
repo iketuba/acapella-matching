@@ -8,6 +8,8 @@ import {
 import { LogoutOrLoginButton } from "./LogoutOrLoginButton";
 import { NewRecruitButton } from "./NewRecruitButton";
 import { ContactCopyChip } from "@/components/ContactCopyChip";
+import { LabelChip, ValueChip } from "@/components/Chip";
+import { formatDateTime } from "@/utils/formatDateTime";
 
 type RecruitPost = Tables<"recruit_posts">;
 type RecruitPostListItem = Pick<
@@ -24,32 +26,6 @@ type RecruitPostListItem = Pick<
 > & {
   status: RecruitStatus;
 };
-
-function formatDateTime(value: string | null | undefined): string {
-  if (!value) return "";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "";
-
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mi = String(d.getMinutes()).padStart(2, "0");
-
-  return `${yyyy}/${mm}/${dd} ${hh}:${mi}`;
-}
-
-const LabelChip = ({ children }: { children: React.ReactNode }) => (
-  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-    {children}
-  </span>
-);
-
-const ValueChip = ({ children }: { children: React.ReactNode }) => (
-  <span className="rounded-md border border-gray-200 px-2 py-0.5 text-[11px]">
-    {children}
-  </span>
-);
 
 export default async function RecruitListPage() {
   const supabase = await createSupabaseServerClient();
@@ -161,7 +137,7 @@ export default async function RecruitListPage() {
                     </div>
                   )}
 
-                  {/* 投稿日時(更新日時)を右下、タイトルなし、時刻だけ */}
+                  {/* 投稿日時(更新日時) */}
                   {timeText && (
                     <span className="absolute bottom-2 right-3 text-[11px] text-gray-400">
                       {timeText}

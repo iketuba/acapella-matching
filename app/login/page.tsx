@@ -27,20 +27,21 @@ export default function LoginPage() {
     void checkLoggedIn();
   }, [supabase, router]);
 
+  
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (submitting) return;
-
+    
     setSubmitting(true);
     setMessage(null);
-
+    
     try {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-
+        
         if (error) {
           console.error("Failed to sign in:", error);
           setMessage(
@@ -48,13 +49,13 @@ export default function LoginPage() {
           );
           return;
         }
-
+        
         router.push("/");
         router.refresh();
       } else {
         // ✅ 新規登録：メール認証リンクを送って、認証後に /auth/callback へ戻す
         const origin = window.location.origin;
-
+        
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -62,20 +63,53 @@ export default function LoginPage() {
             emailRedirectTo: `${origin}/auth/callback?type=signup`,
           },
         });
-
+        
         if (error) {
           console.error("Failed to sign up:", error);
           setMessage("新規登録に失敗しました。入力内容を確認してください。");
           return;
         }
-
+        
         router.push(`/check-email?email=${encodeURIComponent(email)}`);
       }
     } finally {
       setSubmitting(false);
     }
   };
+  
+  const handleGoogle = async () => {
+    if (submitting) return;
 
+    setSubmitting(true);
+    setMessage(null);
+
+    try {
+      const origin = window.location.origin;
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          // ✅ OAuth後にここへ戻す
+          redirectTo: `${origin}/auth/callback?type=oauth`,
+        },
+      });
+
+      if (error) {
+        console.error("Failed to sign in with Google:", error);
+        setMessage(
+          "Googleログインに失敗しました。時間をおいて再度お試しください。"
+        );
+        setSubmitting(false);
+      }
+
+      // 成功時はGoogleへ遷移するので、ここではsetSubmitting(false)しない
+    } catch (e) {
+      console.error(e);
+      setMessage("Googleログインに失敗しました。");
+      setSubmitting(false);
+    }
+  };
+  
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-8">
       <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
@@ -141,6 +175,23 @@ export default function LoginPage() {
               : "新規登録"}
           </button>
         </form>
+
+        <div className="mt-4 flex flex-col gap-2">
+          <div className="flex items-center gap-3 py-2">
+            <div className="h-px flex-1 bg-gray-200" />
+            <span className="text-xs text-gray-500">または</span>
+            <div className="h-px flex-1 bg-gray-200" />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogle}
+            disabled={submitting}
+            className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {submitting ? "遷移中..." : "Googleで続行"}
+          </button>
+        </div>
 
         <div className="mt-4 border-t border-gray-100 pt-3 text-center">
           {mode === "signin" ? (

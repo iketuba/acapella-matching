@@ -8,6 +8,8 @@ import {
   type RecruitStatus,
 } from "@/constants/recruitStatus";
 import { ContactCopyChip } from "@/components/ContactCopyChip";
+import { LabelChip, ValueChip } from "@/components/Chip";
+import { formatDateTime } from "@/utils/formatDateTime";
 
 type RecruitPostBase = Tables<"recruit_posts">;
 type RecruitPost = Omit<RecruitPostBase, "status"> & {
@@ -17,18 +19,6 @@ type RecruitPost = Omit<RecruitPostBase, "status"> & {
 type PageProps = {
   params: { id: string };
 };
-
-const LabelChip = ({ children }: { children: React.ReactNode }) => (
-  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-    {children}
-  </span>
-);
-
-const ValueChip = ({ children }: { children: React.ReactNode }) => (
-  <span className="rounded-md border border-gray-200 px-2 py-0.5 text-[11px]">
-    {children}
-  </span>
-);
 
 export default async function RecruitDetailPage({ params }: PageProps) {
   const { id } = await params;
@@ -60,6 +50,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
   const hasCircleName = Boolean(post.circle_name?.trim());
   const hasTargetLive = Boolean(post.target_live?.trim());
   const hasDescription = Boolean(post.description?.trim());
+  const timeText = formatDateTime(post.updated_at ?? post.created_at);
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
@@ -139,9 +130,16 @@ export default async function RecruitDetailPage({ params }: PageProps) {
 
             {/* タイトルと本文は改行 */}
             <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800">
-              {post.description}
+              <ValueChip>{post.description}</ValueChip>
             </p>
           </div>
+        )}
+
+        {/* 投稿日時(更新日時) */}
+        {timeText && (
+          <span className="absolute bottom-3 right-3 text-[11px] text-gray-400">
+            {timeText}
+          </span>
         )}
       </section>
 
