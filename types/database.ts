@@ -18,7 +18,7 @@ export type Database = {
         Row: {
           area: string
           circle_name: string | null
-          contacts: Json
+          contacts: string
           created_at: string
           description: string
           id: string
@@ -32,7 +32,7 @@ export type Database = {
         Insert: {
           area: string
           circle_name?: string | null
-          contacts?: Json
+          contacts: string
           created_at?: string
           description: string
           id?: string
@@ -46,7 +46,7 @@ export type Database = {
         Update: {
           area?: string
           circle_name?: string | null
-          contacts?: Json
+          contacts?: string
           created_at?: string
           description?: string
           id?: string

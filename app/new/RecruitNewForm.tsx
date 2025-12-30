@@ -25,7 +25,7 @@ export function RecruitNewForm({ ownerUserId }: Props) {
     description: "",
     requiredPartsText: [],
     area: "",
-    contacts: {},
+    contacts: "",
     circleName: "",
     status: RecruitStatus.OPEN,
     targetLive: "",

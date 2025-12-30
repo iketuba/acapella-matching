@@ -17,16 +17,12 @@ const MAIN_PART_OPTIONS = {
   VP: "Vocal Percussion",
 } as const;
 
-type ContactKey = "gmail" | "line" | "x" | "instagram" | "youtube";
-
-export type RecruitContacts = Partial<Record<ContactKey, string>>;
-
 export type RecruitFormValues = {
   title: string;
   description: string;
   requiredPartsText: string[];
   area: string;
-  contacts: RecruitContacts;
+  contacts: string;
   circleName: string;
   status: string;
   targetLive: string;
@@ -38,46 +34,27 @@ type Props = {
   onSubmit: (values: RecruitFormValues) => Promise<void>;
 };
 
-const CONTACT_FIELDS: Array<{
-  key: ContactKey;
-  label: string;
-  placeholder: string;
-}> = [
-  { key: "gmail", label: "Gmail", placeholder: "例）example@gmail.com" },
-  { key: "line", label: "LINE", placeholder: "例）ID または URL" },
-  { key: "x", label: "X", placeholder: "例）https://x.com/your_id" },
-  {
-    key: "instagram",
-    label: "Instagram",
-    placeholder: "例）https://instagram.com/your_id",
-  },
-  {
-    key: "youtube",
-    label: "YouTube",
-    placeholder: "例）https://youtube.com/@your_channel",
-  },
-];
-
-const hasAnyContact = (contacts: RecruitContacts): boolean => {
-  return Object.values(contacts).some((v) => (v ?? "").trim() !== "");
-};
-
-const normalizeContacts = (contacts: RecruitContacts): RecruitContacts => {
-  const cleaned: RecruitContacts = {};
-  for (const key of Object.keys(contacts) as ContactKey[]) {
-    const v = contacts[key];
-    const trimmed = (v ?? "").trim();
-    if (trimmed !== "") cleaned[key] = trimmed;
-  }
-  return cleaned;
-};
-
 type FormErrors = Partial<
   Record<
     "title" | "description" | "requiredPartsText" | "area" | "contacts",
     string
   >
 >;
+
+const normalizeContact = (raw: string): string => {
+  const v = raw.trim();
+
+  // mailto は許可（そのまま）
+  if (v.toLowerCase().startsWith("mailto:")) return v;
+
+  // URL スキーム無しで貼られがちなので、ドメインっぽい場合は https:// を付ける
+  // 例: x.com/xxx, instagram.com/xxx, forms.gle/xxx, discord.gg/xxx, line.me/...
+  const looksLikeUrl = /^[a-z0-9.-]+\.[a-z]{2,}([/].*)?$/i.test(v);
+  if (looksLikeUrl && !/^https?:\/\//i.test(v)) return `https://${v}`;
+
+  // それ以外はそのまま（例: abc@gmail.com など）
+  return v;
+};
 
 export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
   const [form, setForm] = useState<RecruitFormValues>(initialValues);
@@ -87,11 +64,8 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
   const setFieldError = (key: keyof FormErrors, message?: string) => {
     setErrors((prev) => {
       const next = { ...prev };
-      if (!message) {
-        delete next[key];
-      } else {
-        next[key] = message;
-      }
+      if (!message) delete next[key];
+      else next[key] = message;
       return next;
     });
   };
@@ -101,23 +75,22 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
     (
       e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
-      const value =
-        e.target.type === "checkbox"
-          ? (e.target as HTMLInputElement).checked
-          : e.target.value;
+      const value = e.target.value;
 
       setForm((prev) => ({
         ...prev,
         [field]: value,
       }));
 
-      // ✅ 入力したら 該当エラーを消す
+      // ✅ 入力したら該当エラーを消す
       if (field === "title" && String(value).trim() !== "")
         setFieldError("title");
       if (field === "description" && String(value).trim() !== "")
         setFieldError("description");
       if (field === "area" && String(value).trim() !== "")
         setFieldError("area");
+      if (field === "contacts" && String(value).trim() !== "")
+        setFieldError("contacts");
     };
 
   const handleMainPartToggle = (part: string) => {
@@ -127,26 +100,11 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
         ? prev.requiredPartsText.filter((p) => p !== part)
         : [...prev.requiredPartsText, part];
 
-      // ✅ 1つでも選ばれたらエラー解除
       if (next.length > 0) setFieldError("requiredPartsText");
 
       return { ...prev, requiredPartsText: next };
     });
   };
-
-  const handleContactChange =
-    (key: ContactKey) => (e: ChangeEvent<HTMLInputElement>) => {
-      const raw = e.target.value;
-
-      setForm((prev) => {
-        const nextContacts = { ...prev.contacts, [key]: raw };
-
-        // ✅ 1つでも入力されたらエラー解除
-        if (hasAnyContact(nextContacts)) setFieldError("contacts");
-
-        return { ...prev, contacts: nextContacts };
-      });
-    };
 
   const validate = (values: RecruitFormValues): FormErrors => {
     const next: FormErrors = {};
@@ -157,8 +115,8 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
     if (values.area.trim() === "") next.area = "エリアを入力してください。";
     if (values.requiredPartsText.length === 0)
       next.requiredPartsText = "必要パートを1つ以上選択してください。";
-    if (!hasAnyContact(values.contacts))
-      next.contacts = "連絡先を1つ以上入力してください。";
+    if (values.contacts.trim() === "")
+      next.contacts = "連絡先を入力してください。";
 
     return next;
   };
@@ -167,18 +125,17 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
     e.preventDefault();
     if (submitting) return;
 
-    const nextErrors = validate(form);
-    setErrors(nextErrors);
+    const normalizedContacts = normalizeContact(form.contacts);
 
-    if (Object.keys(nextErrors).length > 0) {
-      return;
-    }
+    const nextErrors = validate({ ...form, contacts: normalizedContacts });
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
 
     setSubmitting(true);
     try {
       await onSubmit({
         ...form,
-        contacts: normalizeContacts(form.contacts),
+        contacts: normalizedContacts,
       });
     } finally {
       setSubmitting(false);
@@ -267,34 +224,24 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
         )}
       </div>
 
-      {/* 連絡先 */}
+      {/* 連絡先（1つ必須） */}
       <div className="flex flex-col gap-1">
         <label className="text-sm font-semibold">
-          連絡先（いずれか1つ必須） <span className="text-red-500">*</span>
+          連絡先（公開されます） <span className="text-red-500">*</span>
         </label>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          {CONTACT_FIELDS.map((f) => (
-            <div key={f.key} className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-700">
-                {f.label}
-              </label>
-              <input
-                type="text"
-                value={form.contacts[f.key] ?? ""}
-                onChange={handleContactChange(f.key)}
-                className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                placeholder={f.placeholder}
-              />
-            </div>
-          ))}
-        </div>
-
+        <input
+          type="text"
+          value={form.contacts}
+          onChange={handleChange("contacts")}
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          placeholder="例）abc@gmail.com / https://instagram.com/id"
+        />
         {errors.contacts ? (
           <p className="text-xs font-medium text-red-600">{errors.contacts}</p>
         ) : (
           <p className="text-xs text-gray-500">
-            どれか1つ入力してください（空欄の項目は送信されません）。
+            URLでもメールでもOKです（URLは https://
+            を自動補完する場合があります）。
           </p>
         )}
       </div>

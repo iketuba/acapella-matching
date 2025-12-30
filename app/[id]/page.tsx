@@ -3,24 +3,42 @@ import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Tables } from "@/types/database";
 import { DeleteRecruitButton } from "./DeleteRecruitButton";
+import {
+  RecruitStatusConfig,
+  type RecruitStatus,
+} from "@/constants/recruitStatus";
+import { ContactCopyChip } from "@/components/ContactCopyChip";
 
-type RecruitPost = Tables<"recruit_posts">;
+type RecruitPostBase = Tables<"recruit_posts">;
+type RecruitPost = Omit<RecruitPostBase, "status"> & {
+  status: RecruitStatus;
+};
 
 type PageProps = {
   params: { id: string };
 };
+
+const LabelChip = ({ children }: { children: React.ReactNode }) => (
+  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
+    {children}
+  </span>
+);
+
+const ValueChip = ({ children }: { children: React.ReactNode }) => (
+  <span className="rounded-md border border-gray-200 px-2 py-0.5 text-[11px]">
+    {children}
+  </span>
+);
 
 export default async function RecruitDetailPage({ params }: PageProps) {
   const { id } = await params;
 
   const supabase = await createSupabaseServerClient();
 
-  // 現在ログイン中のユーザー取得（未ログインなら user は null）
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 該当の募集1件を取得
   const { data, error } = await supabase
     .from("recruit_posts")
     .select("*")
@@ -31,35 +49,22 @@ export default async function RecruitDetailPage({ params }: PageProps) {
     console.error("Failed to fetch recruit_post:", error);
   }
 
-  if (!data) {
-    // 該当募集がなければ 404
-    notFound();
-  }
+  if (!data) notFound();
 
-  const post: RecruitPost = data;
+  const post: RecruitPost = data as RecruitPost;
   const isOwner = user?.id === post.owner_user_id;
 
-  const RecruitStatusConfig: Record<
-    string,
-    { label: string; className: string }
-  > = {
-    open: {
-      label: "募集中",
-      className: "bg-green-100 text-green-700 border-green-300",
-    },
-    closed: {
-      label: "募集締切",
-      className: "bg-red-100 text-red-700 border-red-300",
-    },
-  };
-
-  const targetLiveLabel = post.target_live ?? "未定";
+  const hasRequiredParts = (post.required_parts?.length ?? 0) > 0;
+  const hasArea = Boolean(post.area?.trim());
+  const hasContacts = Boolean(post.contacts?.trim());
+  const hasCircleName = Boolean(post.circle_name?.trim());
+  const hasTargetLive = Boolean(post.target_live?.trim());
+  const hasDescription = Boolean(post.description?.trim());
 
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-bold">募集詳細</h1>
-        {/* 戻るボタン（一覧へ） */}
         <Link
           href="/"
           className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-50"
@@ -69,7 +74,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
       </header>
 
       <section className="relative rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-        {/* 右上ステータスバッジ（右上） */}
+        {/* 右上ステータスバッジ */}
         <span
           className={`absolute right-3 top-3 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
             RecruitStatusConfig[post.status].className
@@ -77,73 +82,78 @@ export default async function RecruitDetailPage({ params }: PageProps) {
         >
           {RecruitStatusConfig[post.status].label}
         </span>
+
         {/* タイトル */}
         <h2 className="text-lg font-semibold">{post.title}</h2>
 
-        {/* ステータス / エリア / サークル */}
-        <div className="mt-3 flex flex-wrap gap-3 text-xs text-gray-700">
-          <div className="flex items-center gap-1">
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-              エリア
-            </span>
-            <span className="text-[11px]">{post.area}</span>
-          </div>
+        {/* 一覧と同じチップ表示（改行単位で並べる） */}
+        <div className="mt-3 flex flex-col gap-2 text-xs text-gray-700">
+          {/* 必要パート */}
+          {hasRequiredParts && (
+            <div className="flex flex-wrap items-center gap-1">
+              <LabelChip>必要パート</LabelChip>
+              {post.required_parts.map((part) => (
+                <ValueChip key={part}>{part}</ValueChip>
+              ))}
+            </div>
+          )}
 
-          <div className="flex items-center gap-1">
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-              サークル
-            </span>
-            <span className="text-[11px]">{post.circle_name ?? "未設定"}</span>
-          </div>
+          {/* エリア */}
+          {hasArea && (
+            <div className="flex flex-wrap items-center gap-1">
+              <LabelChip>エリア</LabelChip>
+              <ValueChip>{post.area}</ValueChip>
+            </div>
+          )}
 
-          <div className="flex items-center gap-1">
-            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-              目標ライブ
-            </span>
-            <span className="text-[11px]">{targetLiveLabel}</span>
-          </div>
-        </div>
+          {/* 連絡先 */}
+          {hasContacts && (
+            <div className="flex flex-wrap items-center gap-1">
+              <LabelChip>連絡先</LabelChip>
+              <ContactCopyChip contacts={post.contacts} />
+            </div>
+          )}
 
-        {/* 必要パート */}
-        <div className="mt-4">
-          <h3 className="text-sm font-semibold text-gray-800">必要パート</h3>
-          <div className="mt-1 flex flex-wrap gap-1 text-xs">
-            {post.required_parts.length === 0 ? (
-              <span className="text-gray-400">未指定</span>
-            ) : (
-              post.required_parts.map((part) => (
-                <span
-                  key={part}
-                  className="rounded-md border border-gray-200 px-2 py-0.5"
-                >
-                  {part}
-                </span>
-              ))
-            )}
-          </div>
+          {/* サークル名 */}
+          {hasCircleName && (
+            <div className="flex flex-wrap items-center gap-1">
+              <LabelChip>サークル名</LabelChip>
+              <ValueChip>{post.circle_name}</ValueChip>
+            </div>
+          )}
+
+          {/* 目標ライブ */}
+          {hasTargetLive && (
+            <div className="flex flex-wrap items-center gap-1">
+              <LabelChip>目標ライブ</LabelChip>
+              <ValueChip>{post.target_live}</ValueChip>
+            </div>
+          )}
         </div>
 
         {/* 募集内容（説明） */}
-        <div className="mt-4">
-          <h3 className="text-sm font-semibold text-gray-800">募集内容</h3>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-gray-800">
-            {post.description}
-          </p>
-        </div>
+        {hasDescription && (
+          <div className="mt-2 text-xs text-gray-700">
+            {/* タイトルは他と同じラベルチップ */}
+            <LabelChip>募集内容</LabelChip>
+
+            {/* タイトルと本文は改行 */}
+            <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800">
+              {post.description}
+            </p>
+          </div>
+        )}
       </section>
 
       {/* 投稿者のみ編集・削除可能 */}
       {isOwner && (
         <section className="flex gap-3">
-          {/* 更新（編集）ボタン：編集ページは後で作る想定 */}
           <Link
             href={`/${post.id}/edit`}
             className="rounded-md border border-blue-500 px-3 py-1 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
           >
             編集
           </Link>
-
-          {/* 削除ボタン（Client Component） */}
           <DeleteRecruitButton recruitId={post.id} />
         </section>
       )}
