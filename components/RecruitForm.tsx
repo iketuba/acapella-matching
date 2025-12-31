@@ -14,7 +14,7 @@ const MAIN_PART_OPTIONS = {
   SECOND: "2nd",
   THIRD: "3rd",
   BASS: "Bass",
-  VP: "Vocal Percussion",
+  VP: "Voice Percussion",
 } as const;
 
 export type RecruitFormValues = {
