@@ -74,7 +74,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
           {RecruitStatusConfig[post.status].label}
         </span>
 
-        <h2 className="text-lg font-semibold break-words w-5/6">
+        <h2 className="text-lg font-semibold break-words w-4/5">
           {post.title}
         </h2>
 

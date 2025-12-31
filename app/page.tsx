@@ -124,7 +124,7 @@ export default async function RecruitListPage(props: PageProps) {
                       : "bg-white hover:border-blue-400 hover:shadow-md"
                   }`}
                 >
-                  <h2 className="text-base font-semibold break-words w-5/6">
+                  <h2 className="text-base font-semibold break-words w-4/5">
                     {post.title}
                   </h2>
 
