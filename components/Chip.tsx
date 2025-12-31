@@ -10,7 +10,7 @@ export function LabelChip({ children }: { children: ReactNode }) {
 
 export function ValueChip({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded-md border border-gray-200 px-2 py-0.5 text-[11px]">
+    <span className="max-w-full whitespace-normal break-words rounded-md border border-gray-200 px-2 py-0.5 text-[11px]">
       {children}
     </span>
   );

@@ -74,8 +74,9 @@ export default async function RecruitDetailPage({ params }: PageProps) {
           {RecruitStatusConfig[post.status].label}
         </span>
 
-        {/* タイトル */}
-        <h2 className="text-lg font-semibold">{post.title}</h2>
+        <h2 className="text-lg font-semibold break-words w-5/6">
+          {post.title}
+        </h2>
 
         {/* 一覧と同じチップ表示（改行単位で並べる） */}
         <div className="mt-3 flex flex-col gap-2 text-xs text-gray-700">
@@ -129,17 +130,17 @@ export default async function RecruitDetailPage({ params }: PageProps) {
             <LabelChip>募集内容</LabelChip>
 
             {/* タイトルと本文は改行 */}
-            <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800">
-              <ValueChip>{post.description}</ValueChip>
+            <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800 break-words">
+              {post.description}
             </p>
           </div>
         )}
 
         {/* 投稿日時(更新日時) */}
         {timeText && (
-          <span className="absolute bottom-3 right-3 text-[11px] text-gray-400">
+          <p className="absolute bottom-1 right-3 text-[11px] text-gray-400">
             {timeText}
-          </span>
+          </p>
         )}
       </section>
 
