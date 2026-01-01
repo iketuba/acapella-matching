@@ -58,7 +58,7 @@ export function ContactCopyChip({ contacts }: Props) {
       <button
         type="button"
         onClick={openModal}
-        className="max-w-full whitespace-normal wrap-break-word rounded-md border border-gray-200 px-2 py-0.5 text-[11px] hover:bg-gray-50"
+        className="max-w-full whitespace-normal wrap-break-word rounded-md border border-gray-200 px-2.5 py-1 text-[11px] hover:bg-gray-50"
         aria-label="連絡先をコピー"
       >
         {contacts}

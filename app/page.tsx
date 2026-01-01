@@ -125,11 +125,7 @@ export default async function RecruitListPage(props: PageProps) {
               <li key={post.id}>
                 <Link
                   href={`/${post.id}`}
-                  className={`relative block rounded-lg border border-gray-200 p-4 pb-8 shadow-sm transition ${
-                    post.status === "closed"
-                      ? "bg-gray-50 opacity-75 hover:border-gray-300 hover:shadow-md"
-                      : "bg-white hover:border-blue-400 hover:shadow-md"
-                  }`}
+                  className="relative block rounded-lg border border-gray-200 bg-white p-4 pb-8 shadow-sm transition hover:border-blue-400 hover:shadow-md"
                 >
                   <h2 className="text-base font-semibold wrap-break-word w-4/5">
                     {post.title}
