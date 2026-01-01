@@ -6,7 +6,7 @@ export function Header() {
       className="
       sticky top-0 z-50
       border-b border-gray-200/60
-      bg-gradient-to-b from-gray-50/90 via-white/85 to-gray-100/80
+      bg-linear-to-b from-gray-50/90 via-white/85 to-gray-100/80
       backdrop-blur-md
     "
     >
@@ -14,8 +14,8 @@ export function Header() {
         <Link href="/" className="group flex items-center gap-3.5">
           {/* アイコン */}
           <div className="relative">
-            <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 opacity-25 blur-sm transition-all group-hover:opacity-50" />
-            <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 text-lg shadow-md transition-transform group-active:scale-95">
+            <div className="absolute -inset-0.5 rounded-xl bg-linear-to-b from-purple-500 to-pink-500 opacity-25 blur-sm transition-all group-hover:opacity-50" />
+            <span className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-b from-purple-500 to-pink-500 text-lg shadow-md transition-transform group-active:scale-95">
               🎤
             </span>
           </div>
