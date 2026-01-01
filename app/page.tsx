@@ -194,7 +194,7 @@ export default async function RecruitListPage(props: PageProps) {
 
                   {/* 投稿日時(更新日時) */}
                   {timeText && (
-                    <span className="absolute bottom-2 right-3 text-[11px] text-gray-400">
+                    <span className="absolute bottom-2 right-3 text-[11px] text-gray-700">
                       {timeText}
                     </span>
                   )}

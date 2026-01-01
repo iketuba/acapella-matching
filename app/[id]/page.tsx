@@ -120,7 +120,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
           {RecruitStatusConfig[post.status].label}
         </span>
 
-        <h2 className="text-lg font-semibold wrap-break-word w-4/5">
+        <h2 className="text-base font-semibold wrap-break-word w-4/5">
           {post.title}
         </h2>
 
@@ -184,7 +184,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
 
         {/* 投稿日時(更新日時) */}
         {timeText && (
-          <p className="absolute bottom-1 right-3 text-[11px] text-gray-400">
+          <p className="absolute bottom-1 right-3 text-[11px] text-gray-700">
             {timeText}
           </p>
         )}
