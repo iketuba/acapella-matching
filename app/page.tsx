@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Tables } from "@/types/database";
@@ -10,6 +11,12 @@ import { NewRecruitButton } from "./NewRecruitButton";
 import { ContactCopyChip } from "@/components/ContactCopyChip";
 import { LabelChip, ValueChip } from "@/components/Chip";
 import { formatDateTime } from "@/utils/formatDateTime";
+
+export const metadata: Metadata = {
+  title: "募集一覧",
+  description:
+    "アカペラメンバーを募集している投稿一覧。パート・エリア・サークル名などから探せます。",
+};
 
 type RecruitPost = Tables<"recruit_posts">;
 type RecruitPostListItem = Pick<
@@ -124,7 +131,7 @@ export default async function RecruitListPage(props: PageProps) {
                       : "bg-white hover:border-blue-400 hover:shadow-md"
                   }`}
                 >
-                  <h2 className="text-base font-semibold break-words w-4/5">
+                  <h2 className="text-base font-semibold wrap-break-word w-4/5">
                     {post.title}
                   </h2>
 

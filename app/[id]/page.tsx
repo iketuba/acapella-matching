@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -19,6 +20,51 @@ type RecruitPost = Omit<RecruitPostBase, "status"> & {
 type PageProps = {
   params: { id: string };
 };
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { id } = params;
+
+  const supabase = await createSupabaseServerClient();
+
+  const { data } = await supabase
+    .from("recruit_posts")
+    .select(
+      "title, area, circle_name, target_live, status, updated_at, created_at"
+    )
+    .eq("id", id)
+    .single();
+
+  if (!data) {
+    return {
+      title: "募集が見つかりません",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  // description は「重要な要素を短く」つなげる（長すぎると切れる）
+  const parts: string[] = [];
+  if (data.circle_name?.trim())
+    parts.push(`サークル名：${data.circle_name.trim()}`);
+  if (data.area?.trim()) parts.push(`エリア：${data.area.trim()}`);
+  if (data.target_live?.trim())
+    parts.push(`目標ライブ：${data.target_live.trim()}`);
+
+  // closed は検索に載せたくないなら noindex（方針次第で外してOK）
+  const isClosed = data.status === "closed";
+
+  return {
+    title: data.title,
+    description:
+      parts.length > 0
+        ? parts.join(" / ")
+        : "アカペラメンバー募集の詳細ページです。",
+    robots: isClosed
+      ? { index: false, follow: true }
+      : { index: true, follow: true },
+  };
+}
 
 export default async function RecruitDetailPage({ params }: PageProps) {
   const { id } = await params;
@@ -74,7 +120,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
           {RecruitStatusConfig[post.status].label}
         </span>
 
-        <h2 className="text-lg font-semibold break-words w-4/5">
+        <h2 className="text-lg font-semibold wrap-break-word w-4/5">
           {post.title}
         </h2>
 
@@ -130,7 +176,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
             <LabelChip>募集内容</LabelChip>
 
             {/* タイトルと本文は改行 */}
-            <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800 break-words">
+            <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800 wrap-break-word">
               {post.description}
             </p>
           </div>
