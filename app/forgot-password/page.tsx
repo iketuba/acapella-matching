@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Spinner } from "@/components/Spinner";
 
 export default function ForgotPasswordPage() {
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
@@ -53,25 +54,44 @@ export default function ForgotPasswordPage() {
               type="email"
               required
               value={email}
+              disabled={submitting}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
               placeholder="you@example.com"
             />
           </div>
 
           {message && <p className="text-xs text-gray-700">{message}</p>}
 
+          {/* ✅ ボタン幅固定 + スピナー重ね */}
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            aria-busy={submitting}
+            className="relative inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? "送信中..." : "再設定メールを送信"}
+            {/* 幅確保：常に同じテキストを描画して透明にする */}
+            <span className={submitting ? "opacity-0" : "opacity-100"}>
+              再設定メールを送信
+            </span>
+
+            {/* スピナーを中央に重ねる */}
+            {submitting && (
+              <span className="absolute inset-0 flex items-center justify-center">
+                <Spinner size="sm" color="white" />
+              </span>
+            )}
           </button>
         </form>
 
         <div className="mt-4 border-t border-gray-100 pt-3 text-center">
-          <Link href="/login" className="text-xs text-blue-600 underline">
+          <Link
+            href="/login"
+            className={`text-xs text-blue-600 underline ${
+              submitting ? "pointer-events-none opacity-60" : ""
+            }`}
+            aria-disabled={submitting}
+          >
             ログイン画面へ戻る
           </Link>
         </div>

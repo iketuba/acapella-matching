@@ -71,7 +71,7 @@ export function ContactCopyChip({ contacts }: Props) {
           onClick={closeModal}
         >
           <div
-            className="w-full max-w-sm rounded-xl bg-white p-4 shadow-lg"
+            className="w-full max-w-xs rounded-xl bg-white p-4 shadow-lg"
             onClick={(e) => {
               // モーダル内クリックは閉じない
               e.preventDefault();

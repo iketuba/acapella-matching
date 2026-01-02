@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { NavLinkButton } from "@/components/NaviLinkButton";
 import { notFound, redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { RecruitEditForm } from "./RecruitEditForm";
@@ -35,21 +35,16 @@ export default async function RecruitEditPage({ params }: PageProps) {
     }
 
     return (
-        <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
+      <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
         <header className="flex items-center justify-between">
-            <div>
+          <div>
             <h1 className="text-xl font-bold">募集編集</h1>
-            </div>
+          </div>
 
-            <Link
-            href={`/${id}`}
-            className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-50"
-            >
-            募集詳細に戻る
-            </Link>
+          <NavLinkButton href={`/${id}`}>募集詳細に戻る</NavLinkButton>
         </header>
 
         <RecruitEditForm recruitPost={data} />
-        </main>
+      </main>
     );
 }
