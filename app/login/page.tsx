@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Spinner } from "@/components/Spinner";
 
 type Mode = "signin" | "signup";
 
@@ -14,8 +15,14 @@ export default function LoginPage() {
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+
+  // ✅ Email送信とGoogleを分離（UXが自然になる）
+  const [submittingEmail, setSubmittingEmail] = useState(false);
+  const [submittingGoogle, setSubmittingGoogle] = useState(false);
+
   const [message, setMessage] = useState<string | null>(null);
+
+  const busy = submittingEmail || submittingGoogle;
 
   useEffect(() => {
     const checkLoggedIn = async () => {
@@ -27,21 +34,20 @@ export default function LoginPage() {
     void checkLoggedIn();
   }, [supabase, router]);
 
-  
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (submitting) return;
-    
-    setSubmitting(true);
+    if (busy) return;
+
+    setSubmittingEmail(true);
     setMessage(null);
-    
+
     try {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
-        
+
         if (error) {
           console.error("Failed to sign in:", error);
           setMessage(
@@ -49,38 +55,39 @@ export default function LoginPage() {
           );
           return;
         }
-        
+
         router.push("/");
         router.refresh();
-      } else {
-        // ✅ 新規登録：メール認証リンクを送って、認証後に /auth/callback へ戻す
-        const origin = window.location.origin;
-        
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${origin}/auth/callback?type=signup`,
-          },
-        });
-        
-        if (error) {
-          console.error("Failed to sign up:", error);
-          setMessage("新規登録に失敗しました。入力内容を確認してください。");
-          return;
-        }
-        
-        router.push(`/check-email?email=${encodeURIComponent(email)}`);
+        return; // 遷移するので setSubmittingEmail(false) は体感上不要だが、finallyで戻る
       }
+
+      // ✅ 新規登録：メール認証リンクを送って、認証後に /auth/callback へ戻す
+      const origin = window.location.origin;
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${origin}/auth/callback?type=signup`,
+        },
+      });
+
+      if (error) {
+        console.error("Failed to sign up:", error);
+        setMessage("新規登録に失敗しました。入力内容を確認してください。");
+        return;
+      }
+
+      router.push(`/check-email?email=${encodeURIComponent(email)}`);
     } finally {
-      setSubmitting(false);
+      setSubmittingEmail(false);
     }
   };
-  
-  const handleGoogle = async () => {
-    if (submitting) return;
 
-    setSubmitting(true);
+  const handleGoogle = async () => {
+    if (busy) return;
+
+    setSubmittingGoogle(true);
     setMessage(null);
 
     try {
@@ -89,7 +96,6 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          // ✅ OAuth後にここへ戻す
           redirectTo: `${origin}/auth/callback?type=oauth`,
         },
       });
@@ -99,17 +105,19 @@ export default function LoginPage() {
         setMessage(
           "Googleログインに失敗しました。時間をおいて再度お試しください。"
         );
-        setSubmitting(false);
+        setSubmittingGoogle(false);
       }
 
-      // 成功時はGoogleへ遷移するので、ここではsetSubmitting(false)しない
+      // 成功時はGoogleへ遷移するので、ここでは setSubmittingGoogle(false) しない
     } catch (e) {
       console.error(e);
       setMessage("Googleログインに失敗しました。");
-      setSubmitting(false);
+      setSubmittingGoogle(false);
     }
   };
-  
+
+  const submitText = mode === "signin" ? "ログイン" : "新規登録";
+
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-8">
       <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
@@ -130,8 +138,9 @@ export default function LoginPage() {
               type="email"
               required
               value={email}
+              disabled={busy}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
               placeholder="you@example.com"
             />
           </div>
@@ -142,8 +151,9 @@ export default function LoginPage() {
               type="password"
               required
               value={password}
+              disabled={busy}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
               placeholder="6文字以上を推奨"
             />
           </div>
@@ -152,7 +162,10 @@ export default function LoginPage() {
             <div className="-mt-2 text-right">
               <Link
                 href="/forgot-password"
-                className="text-xs text-blue-600 underline"
+                className={`text-xs text-blue-600 underline ${
+                  busy ? "pointer-events-none opacity-60" : ""
+                }`}
+                aria-disabled={busy}
               >
                 パスワードを忘れた方
               </Link>
@@ -161,18 +174,22 @@ export default function LoginPage() {
 
           {message && <p className="text-xs text-gray-700">{message}</p>}
 
+          {/* ✅ 送信ボタン：幅固定 + スピナー重ね */}
           <button
             type="submit"
-            disabled={submitting}
-            className="mt-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={busy}
+            aria-busy={submittingEmail}
+            className="relative mt-2 inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting
-              ? mode === "signin"
-                ? "ログイン中..."
-                : "登録中..."
-              : mode === "signin"
-              ? "ログイン"
-              : "新規登録"}
+            <span className={submittingEmail ? "opacity-0" : "opacity-100"}>
+              {submitText}
+            </span>
+
+            {submittingEmail && (
+              <span className="absolute inset-0 flex items-center justify-center">
+                <Spinner size="sm" color="white" />
+              </span>
+            )}
           </button>
         </form>
 
@@ -183,13 +200,23 @@ export default function LoginPage() {
             <div className="h-px flex-1 bg-gray-200" />
           </div>
 
+          {/* ✅ Googleボタン：幅固定 + スピナー重ね */}
           <button
             type="button"
             onClick={handleGoogle}
-            disabled={submitting}
-            className="w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={busy}
+            aria-busy={submittingGoogle}
+            className="relative inline-flex w-full items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? "遷移中..." : "Googleで続行"}
+            <span className={submittingGoogle ? "opacity-0" : "opacity-100"}>
+              Googleで続行
+            </span>
+
+            {submittingGoogle && (
+              <span className="absolute inset-0 flex items-center justify-center">
+                <Spinner size="sm" color="gray" />
+              </span>
+            )}
           </button>
         </div>
 
@@ -197,7 +224,10 @@ export default function LoginPage() {
           {mode === "signin" ? (
             <button
               type="button"
-              className="text-xs text-blue-600 underline"
+              className={`text-xs text-blue-600 underline ${
+                busy ? "cursor-not-allowed opacity-60" : ""
+              }`}
+              disabled={busy}
               onClick={() => {
                 setMode("signup");
                 setMessage(null);
@@ -208,7 +238,10 @@ export default function LoginPage() {
           ) : (
             <button
               type="button"
-              className="text-xs text-blue-600 underline"
+              className={`text-xs text-blue-600 underline ${
+                busy ? "cursor-not-allowed opacity-60" : ""
+              }`}
+              disabled={busy}
               onClick={() => {
                 setMode("signin");
                 setMessage(null);

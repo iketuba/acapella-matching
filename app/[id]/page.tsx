@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Tables } from "@/types/database";
-import { DeleteRecruitButton } from "./DeleteRecruitButton";
 import {
   RecruitStatusConfig,
   type RecruitStatus,
 } from "@/constants/recruitStatus";
 import { ContactCopyChip } from "@/components/ContactCopyChip";
 import { LabelChip, ValueChip } from "@/components/Chip";
+import { NavLinkButton } from "@/components/NaviLinkButton";
 import { formatDateTime } from "@/utils/formatDateTime";
+import { DeleteRecruitButton } from "./DeleteRecruitButton";
+import { EditRecruitButton } from "./EditRecruitButton";
 
 type RecruitPostBase = Tables<"recruit_posts">;
 type RecruitPost = Omit<RecruitPostBase, "status"> & {
@@ -102,12 +103,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
     <main className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-bold">募集詳細</h1>
-        <Link
-          href="/"
-          className="rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-50"
-        >
-          募集一覧に戻る
-        </Link>
+        <NavLinkButton href="/">募集一覧に戻る</NavLinkButton>
       </header>
 
       <section className="relative rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
@@ -193,12 +189,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
       {/* 投稿者のみ編集・削除可能 */}
       {isOwner && (
         <section className="flex gap-3">
-          <Link
-            href={`/${post.id}/edit`}
-            className="rounded-md border border-blue-500 px-3 py-1 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
-          >
-            編集
-          </Link>
+          <EditRecruitButton recruitId={post.id} />
           <DeleteRecruitButton recruitId={post.id} />
         </section>
       )}

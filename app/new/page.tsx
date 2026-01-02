@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { NavLinkButton } from "@/components/NaviLinkButton";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { RecruitNewForm } from "./RecruitNewForm";
@@ -19,13 +19,7 @@ export default async function RecruitNewPage() {
         {/* 上段：タイトルとボタンを横並びにする */}
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-xl font-bold">募集の新規投稿</h1>
-
-          <Link
-            href="/"
-            className="shrink-0 whitespace-nowrap rounded-md border border-gray-300 px-3 py-1 text-sm text-gray-700 transition hover:bg-gray-50"
-          >
-            募集一覧に戻る
-          </Link>
+          <NavLinkButton href="/">募集一覧に戻る</NavLinkButton>
         </div>
 
         {/* 下段：説明文（ここが画面幅いっぱいに広がる） */}

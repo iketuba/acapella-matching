@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import type { ChangeEvent } from "react";
+import { Spinner } from "@/components/Spinner";
 
 export const RecruitStatus = {
   OPEN: "open",
@@ -44,15 +45,11 @@ type FormErrors = Partial<
 const normalizeContact = (raw: string): string => {
   const v = raw.trim();
 
-  // mailto は許可（そのまま）
   if (v.toLowerCase().startsWith("mailto:")) return v;
 
-  // URL スキーム無しで貼られがちなので、ドメインっぽい場合は https:// を付ける
-  // 例: x.com/xxx, instagram.com/xxx, forms.gle/xxx, discord.gg/xxx, line.me/...
   const looksLikeUrl = /^[a-z0-9.-]+\.[a-z]{2,}([/].*)?$/i.test(v);
   if (looksLikeUrl && !/^https?:\/\//i.test(v)) return `https://${v}`;
 
-  // それ以外はそのまま（例: abc@gmail.com など）
   return v;
 };
 
@@ -82,7 +79,6 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
         [field]: value,
       }));
 
-      // ✅ 入力したら該当エラーを消す
       if (field === "title" && String(value).trim() !== "")
         setFieldError("title");
       if (field === "description" && String(value).trim() !== "")
@@ -190,11 +186,12 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
               key={part}
               type="button"
               onClick={() => handleMainPartToggle(part)}
-              className={`rounded-full border px-3 py-1 text-xs ${
+              disabled={submitting}
+              className={`rounded-full border px-3 py-1 text-xs transition ${
                 form.requiredPartsText.includes(part)
                   ? "border-blue-500 bg-blue-50 text-blue-700"
                   : "border-gray-300 bg-white text-gray-700"
-              }`}
+              } ${submitting ? "cursor-not-allowed opacity-60" : ""}`}
             >
               {part}
             </button>
@@ -216,7 +213,8 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           type="text"
           value={form.area}
           onChange={handleChange("area")}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          disabled={submitting}
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
           placeholder="例）首都圏 / 関西 / 名古屋 など"
         />
         {errors.area && (
@@ -224,7 +222,7 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
         )}
       </div>
 
-      {/* 連絡先（1つ必須） */}
+      {/* 連絡先 */}
       <div className="flex flex-col gap-1">
         <label className="text-sm font-semibold">
           連絡先（公開されます） <span className="text-red-500">*</span>
@@ -233,7 +231,8 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           type="text"
           value={form.contacts}
           onChange={handleChange("contacts")}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          disabled={submitting}
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
           placeholder="例）abc@gmail.com / https://instagram.com/id"
         />
         {errors.contacts ? (
@@ -253,7 +252,8 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           type="text"
           value={form.circleName}
           onChange={handleChange("circleName")}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          disabled={submitting}
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
           placeholder="例）○○大学アカペラサークル△△"
         />
       </div>
@@ -264,7 +264,8 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
         <select
           value={form.status}
           onChange={handleChange("status")}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          disabled={submitting}
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
         >
           <option value={RecruitStatus.OPEN}>募集中</option>
           <option value={RecruitStatus.CLOSED}>募集締切</option>
@@ -278,19 +279,31 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           type="text"
           value={form.targetLive}
           onChange={handleChange("targetLive")}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          disabled={submitting}
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
           placeholder="例）春ライブ2026 / 学祭メインステージ など"
         />
       </div>
 
-      {/* 送信ボタン */}
+      {/* 送信ボタン（✅ ボタン幅固定 + スピナー重ね） */}
       <div className="mt-2 flex justify-end">
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          aria-busy={submitting}
+          className="relative inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {submitting ? "投稿中..." : submitLabel}
+          {/* 幅確保：常に submitLabel を描画して透明にする */}
+          <span className={submitting ? "opacity-0" : "opacity-100"}>
+            {submitLabel}
+          </span>
+
+          {/* スピナーを中央に重ねる */}
+          {submitting && (
+            <span className="absolute inset-0 flex items-center justify-center">
+              <Spinner size="sm" color="white" />
+            </span>
+          )}
         </button>
       </div>
     </form>

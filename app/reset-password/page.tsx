@@ -3,10 +3,12 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Spinner } from "@/components/Spinner";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
   const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -74,20 +76,33 @@ export default function ResetPasswordPage() {
               type="password"
               required
               value={password}
+              disabled={submitting}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
               placeholder="8文字以上推奨"
             />
           </div>
 
           {message && <p className="text-xs text-gray-700">{message}</p>}
 
+          {/* ✅ ボタン幅固定 + スピナー重ね */}
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            aria-busy={submitting}
+            className="relative inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {submitting ? "更新中..." : "パスワードを更新"}
+            {/* 幅確保：常に同じテキストを描画して透明にする */}
+            <span className={submitting ? "opacity-0" : "opacity-100"}>
+              パスワードを更新
+            </span>
+
+            {/* スピナーを中央に重ねる */}
+            {submitting && (
+              <span className="absolute inset-0 flex items-center justify-center">
+                <Spinner size="sm" color="white" />
+              </span>
+            )}
           </button>
         </form>
       </section>
