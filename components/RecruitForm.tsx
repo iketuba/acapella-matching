@@ -149,7 +149,7 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           type="text"
           value={form.title}
           onChange={handleChange("title")}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           placeholder="例）新歓ライブのリード募集"
         />
         {errors.title && (
@@ -165,7 +165,7 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
         <textarea
           value={form.description}
           onChange={handleChange("description")}
-          className="min-h-[120px] rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="min-h-[120px] rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
           placeholder="募集の詳細、活動頻度、求める雰囲気などを書いてください。"
         />
         {errors.description && (
@@ -214,7 +214,7 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           value={form.area}
           onChange={handleChange("area")}
           disabled={submitting}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+          className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
           placeholder="例）首都圏 / 関西 / 名古屋 など"
         />
         {errors.area && (
@@ -232,7 +232,7 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           value={form.contacts}
           onChange={handleChange("contacts")}
           disabled={submitting}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+          className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
           placeholder="例）abc@gmail.com / https://instagram.com/id"
         />
         {errors.contacts ? (
@@ -253,7 +253,7 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           value={form.circleName}
           onChange={handleChange("circleName")}
           disabled={submitting}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+          className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
           placeholder="例）○○大学アカペラサークル△△"
         />
       </div>
@@ -265,7 +265,7 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           value={form.status}
           onChange={handleChange("status")}
           disabled={submitting}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+          className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
         >
           <option value={RecruitStatus.OPEN}>募集中</option>
           <option value={RecruitStatus.CLOSED}>募集締切</option>
@@ -280,7 +280,7 @@ export function RecruitForm({ initialValues, submitLabel, onSubmit }: Props) {
           value={form.targetLive}
           onChange={handleChange("targetLive")}
           disabled={submitting}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+          className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
           placeholder="例）春ライブ2026 / 学祭メインステージ など"
         />
       </div>

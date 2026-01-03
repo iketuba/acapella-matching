@@ -109,7 +109,7 @@ export default async function RecruitDetailPage({ params }: PageProps) {
       <section className="relative rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
         {/* 右上ステータスバッジ */}
         <span
-          className={`absolute right-3 top-3 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
+          className={`absolute right-3 top-3 rounded-full border px-2 py-0.5 text-xs font-semibold ${
             RecruitStatusConfig[post.status].className
           }`}
         >
@@ -167,12 +167,12 @@ export default async function RecruitDetailPage({ params }: PageProps) {
 
         {/* 募集内容（説明） */}
         {hasDescription && (
-          <div className="mt-2 text-xs text-gray-700">
+          <div className="mt-3 text-xs text-gray-700">
             {/* タイトルは他と同じラベルチップ */}
             <LabelChip>募集内容</LabelChip>
 
             {/* タイトルと本文は改行 */}
-            <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800 wrap-break-word">
+            <p className="mt-2 whitespace-pre-wrap text-sm text-gray-800 wrap-break-word pl-2">
               {post.description}
             </p>
           </div>

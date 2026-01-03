@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-8">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-start px-4 pt-20 pb-8">
       <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <h1 className="text-xl font-bold text-gray-900">パスワード再設定</h1>
         <p className="mt-1 text-xs text-gray-500">
@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
               value={email}
               disabled={submitting}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+              className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
               placeholder="you@example.com"
             />
           </div>

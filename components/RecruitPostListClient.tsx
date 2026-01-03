@@ -105,7 +105,7 @@ export function RecruitPostListClient({
 
                 {/* ステータスバッジ（右上） */}
                 <span
-                  className={`absolute right-3 top-3 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
+                  className={`absolute right-3 top-3 rounded-full border px-2 py-0.5 text-xs font-semibold ${
                     RecruitStatusConfig[post.status].className
                   }`}
                 >

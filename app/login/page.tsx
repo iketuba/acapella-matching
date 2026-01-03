@@ -119,7 +119,7 @@ export default function LoginPage() {
   const submitText = mode === "signin" ? "ログイン" : "新規登録";
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-8">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-start px-4 pt-20 pb-8">
       <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <h1 className="text-xl font-bold text-gray-900">
           {mode === "signin" ? "ログイン" : "新規登録"}
@@ -140,7 +140,7 @@ export default function LoginPage() {
               value={email}
               disabled={busy}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+              className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
               placeholder="you@example.com"
             />
           </div>
@@ -153,7 +153,7 @@ export default function LoginPage() {
               value={password}
               disabled={busy}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+              className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
               placeholder="6文字以上を推奨"
             />
           </div>

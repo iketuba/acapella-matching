@@ -23,7 +23,7 @@ export function Header() {
           {/* タイトル */}
           <h1
             className="
-            text-[15px] sm:text-[17px]
+            text-base sm:text-[17px]
             font-semibold tracking-tight
             text-gray-700
             transition-colors

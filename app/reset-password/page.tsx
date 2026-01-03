@@ -78,7 +78,7 @@ export default function ResetPasswordPage() {
               value={password}
               disabled={submitting}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-md border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
+              className="rounded-md border border-gray-300 px-3 py-2 text-base outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-50"
               placeholder="8文字以上推奨"
             />
           </div>
